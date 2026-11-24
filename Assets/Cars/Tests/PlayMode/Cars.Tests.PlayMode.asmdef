@@ -1,0 +1,5 @@
+﻿{
+  "name": "Cars.Tests.PlayMode",
+  "references": ["Cars.Runtime", "Unity.ugui"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

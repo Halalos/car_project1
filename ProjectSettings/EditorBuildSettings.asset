@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Cars/Generated/Scenes/Bootstrap.unity
+    guid: 379af9ad59c1bd04ab52dd0c0b316f4b
+  - enabled: 1
+    path: Assets/Cars/Generated/Scenes/MainMenu.unity
+    guid: 520a31e10d1f2a743a6a789e4acd5a97
+  - enabled: 1
+    path: Assets/Cars/Generated/Scenes/Gameplay.unity
+    guid: 2446cdc1bde98d44c8c39cec16f62348
+  m_configObjects: {}

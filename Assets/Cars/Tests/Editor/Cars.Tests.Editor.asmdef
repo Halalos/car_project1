@@ -1,0 +1,6 @@
+﻿{
+  "name": "Cars.Tests.Editor",
+  "references": ["Cars.Runtime"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

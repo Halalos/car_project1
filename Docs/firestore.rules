@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+    function upgradeLevel(value) { return value is int && value >= 0 && value <= 5; }
+    function upgradesValid(upgrades) {
+      return upgrades is map
+        && upgrades.keys().hasAll(['speed', 'acceleration', 'handling'])
+        && upgrades.keys().hasOnly(['speed', 'acceleration', 'handling'])
+        && upgradeLevel(upgrades.speed) && upgradeLevel(upgrades.acceleration)
+        && upgradeLevel(upgrades.handling);
+    }
+    function profileValid(uid) {
+      let d = request.resource.data;
+      return d.keys().hasAll(['playerId', 'coins', 'profileJson', 'updatedAt', 'upgrades'])
+        && d.keys().hasOnly(['playerId', 'coins', 'profileJson', 'updatedAt', 'upgrades'])
+        && upgradesValid(d.upgrades)
+        && d.playerId == uid && d.coins is int && d.coins >= 0 && d.coins <= 100000000
+        && d.profileJson is string && d.profileJson.size() <= 750000
+        && d.updatedAt == request.time;
+    }
+    function resultValid(uid) {
+      let d = request.resource.data;
+      return d.keys().hasAll(['playerId', 'score', 'finishedUtc', 'createdAt', 'mode', 'track', 'level', 'distance', 'elapsed', 'position', 'won', 'earnedCoins'])
+        && d.keys().hasOnly(['playerId', 'score', 'finishedUtc', 'createdAt', 'mode', 'track', 'level', 'distance', 'elapsed', 'position', 'won', 'earnedCoins'])
+        && d.playerId == uid && d.score is int && d.score >= 0 && d.score <= 2000000000
+        && d.finishedUtc is string && d.finishedUtc.size() <= 40 && d.createdAt == request.time
+        && d.mode in ['EndlessSurvival', 'Race', 'TimeAttack']
+        && d.track in ['GreenValley', 'SunsetDesert']
+        && d.level is int && d.level >= 0 && d.level <= 2
+        && d.distance is number && d.distance >= 0 && d.distance <= 1000000000
+        && d.elapsed is number && d.elapsed >= 0
+        && d.position is int && d.position >= 1 && d.position <= 6
+        && d.won is bool
+        && d.earnedCoins is int && d.earnedCoins >= 0 && d.earnedCoins <= 100000000;
+    }
+    match /players/{uid} {
+      allow read: if owner(uid);
+      allow create, update: if owner(uid) && profileValid(uid);
+      allow delete: if false;
+      match /results/{runId} {
+        allow read: if owner(uid);
+        allow create, update: if owner(uid) && resultValid(uid);
+        allow delete: if false;
+      }
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
